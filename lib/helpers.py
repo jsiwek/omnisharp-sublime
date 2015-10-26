@@ -1,6 +1,9 @@
 import sublime
 import os
 import fnmatch
+import logging
+
+log = logging.getLogger(__name__)
 
 def is_csharp(view):
     if len(view.sel()) == 0:
@@ -26,7 +29,7 @@ def project_data(view):
 def current_solution_filepath_or_project_rootpath(view):
     project_file = project_file_name(view)
     if project_file is not None:
-        print('project file %s found', project_file)
+        log.debug('project file %s found' % project_file)
 
         data = project_data(view)
         if 'solution_file' not in data:
@@ -45,7 +48,7 @@ def current_solution_filepath_or_project_rootpath(view):
         try:
             return os.path.dirname(active_window.active_view().file_name())
         except Exception:
-            print("New file not saved. Can't find path.")
+            log.error("New file not saved. Can't find path.")
             return None
 
 def save_all_files(window):

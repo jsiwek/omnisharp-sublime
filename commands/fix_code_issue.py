@@ -1,10 +1,12 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
 
+log = logging.getLogger(__name__)
 
 class OmniSharpFixCodeIssue(sublime_plugin.TextCommand):
     data = None
@@ -17,16 +19,16 @@ class OmniSharpFixCodeIssue(sublime_plugin.TextCommand):
             self._fixcodeissue(edit)
 
     def _handle_fixcodeissue(self, data):
-        print('fixcodeissue response is:')
-        print(data)
+        log.debug('fixcodeissue response is:')
+        log.debug(data)
         if data is None:
             return
         self.data = data
         self.view.run_command('omni_sharp_fix_code_issue')
 
     def _fixcodeissue(self, edit):
-        print('fixcodeissue is :')
-        print(self.data)
+        log.debug('fixcodeissue is :')
+        log.debug(self.data)
         if self.data != None:
             region = sublime.Region(0, self.view.size())
             self.view.replace(edit, region, self.data["Text"])

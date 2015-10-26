@@ -1,14 +1,17 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import helpers
 from ..lib import omnisharp
 
+log = logging.getLogger(__name__)
+
 class OmniSharpBuildProject(sublime_plugin.TextCommand):
     
     def run(self, edit, buildtype='build'):
-        print('building')
+        log.debug('building')
         options = {}
         options['build'] = self.build
         options['rebuild'] = self.rebuild

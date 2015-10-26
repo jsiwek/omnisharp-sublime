@@ -1,8 +1,11 @@
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
+
+log = logging.getLogger(__name__)
 
 
 class OmniSharpGoToImplementation(sublime_plugin.TextCommand):
@@ -16,19 +19,19 @@ class OmniSharpGoToImplementation(sublime_plugin.TextCommand):
             self._show_usage_view(edit)
 
     def _handle_findimplementations(self, data):
-        print(data)
+        log.debug(data)
         if data is None:
             return
         self.data = data
         self.view.run_command('omni_sharp_go_to_implementation')
 
     def _show_usage_view(self, edit):
-        print('gotoimplementation is :')
-        print(self.data)
+        log.debug('gotoimplementation is :')
+        log.debug(self.data)
         self.quickitems = [];
         if "QuickFixes" in self.data and self.data["QuickFixes"] != None:
             for i in self.data["QuickFixes"]:
-                print(i)
+                log.debug(i)
                 self.quickitems.append(i["Text"].strip())
         if len(self.quickitems) > 0:
             if len(self.quickitems) == 1:
@@ -47,9 +50,9 @@ class OmniSharpGoToImplementation(sublime_plugin.TextCommand):
 
     def file_opened(self, view, item):
     	if not view.is_loading():
-    		print('loaded')
+    		log.debug('loaded')
     		view.run_command("goto_line", {"line": item["Line"]})
     	else:
-    		print('not loaded, trying again')
+    		log.debug('not loaded, trying again')
     		sublime.set_timeout(lambda: self.file_opened(view, item), 10)
         

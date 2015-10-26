@@ -2,9 +2,12 @@ import os
 import sublime
 import sublime_plugin
 import glob
+import logging
 
 from ..lib import helpers
 from ..lib import omnisharp
+
+log = logging.getLogger(__name__)
 
 class OmniSharpNewFile(sublime_plugin.TextCommand):
     
@@ -12,7 +15,7 @@ class OmniSharpNewFile(sublime_plugin.TextCommand):
     TMLP_DIR = 'templates'
 
     def run(self, edit, tmpltype='class', paths=[]):
-        print(paths)
+        log.debug(paths)
         if (len(paths) == 0):
             if sublime.active_window().active_view().file_name() is not None:
                 paths = [sublime.active_window().active_view().file_name()]
@@ -58,8 +61,8 @@ class OmniSharpNewFile(sublime_plugin.TextCommand):
 
 
     def _handle_addtoproject(self, data):
-        print('file added to project')
-        print(data)
+        log.debug('file added to project')
+        log.debug(data)
 
     def solution_folder(self, start_path):
         last_root    = start_path

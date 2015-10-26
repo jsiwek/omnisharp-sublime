@@ -1,12 +1,14 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 from time import time
 
 from ..lib import helpers
 from ..lib import omnisharp
 from ..lib.view import OutputPanel
 
+log = logging.getLogger(__name__)
 
 class OmniSharpSyntaxEventListener(sublime_plugin.EventListener):
     data = None
@@ -48,12 +50,12 @@ class OmniSharpSyntaxEventListener(sublime_plugin.EventListener):
         if bool(helpers.get_settings(view, 'omnisharp_onsave_codecheck')):
             omnisharp.get_response(view, '/codecheck', self._handle_codeerrors)
 
-        print('file changed')
+        log.debug('file changed')
 
     def _handle_codeerrors(self, data):
-        print('handling Errors')
+        log.debug('handling Errors')
         if data is None:
-            print('no data')
+            log.debug('no data')
             return
         
         self.data = data
@@ -91,13 +93,13 @@ class OmniSharpSyntaxEventListener(sublime_plugin.EventListener):
             showWarningPanel = bool(helpers.get_settings(self.view,'omnisharp_onsave_showwarningwindows'))
             haveError = len(self.errlines) > 0
             if haveError:
-                # print('underlines')
+                # log.debug('underlines')
                 self.view.settings().set("oops", oops_map)
                 self.view.add_regions("oops", self.errlines, "sublimelinter.mark.error", "circle",  sublime.DRAW_NO_FILL|sublime.DRAW_NO_OUTLINE|sublime.DRAW_SOLID_UNDERLINE )
                 if showErrorPanel:
                     self.view.window().run_command("show_panel", {"panel": "output.variable_get"})
             if len(self.warninglines) > 0:
-                # print('underlines')
+                # log.debug('underlines')
                 self.view.settings().set("oops", oops_map)
                 self.view.add_regions("oops", self.warninglines, "sublimelinter.mark.warning", "dot", sublime.DRAW_NO_FILL + sublime.DRAW_NO_OUTLINE + sublime.DRAW_SQUIGGLY_UNDERLINE )
                 if (not haveError or not showErrorPanel) and showWarningPanel:

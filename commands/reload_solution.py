@@ -1,9 +1,12 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import helpers
 from ..lib import omnisharp
+
+log = logging.getLogger(__name__)
 
 class OmniSharpReloadSolution(sublime_plugin.TextCommand):
     
@@ -14,4 +17,4 @@ class OmniSharpReloadSolution(sublime_plugin.TextCommand):
         return helpers.is_csharp(sublime.active_window().active_view())
 
     def _handle_reloadsolution(self, data):
-        print("Solution Reloaded")
+        log.info("Solution Reloaded")

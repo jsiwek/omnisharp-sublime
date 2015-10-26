@@ -1,9 +1,12 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import helpers
 from ..lib import omnisharp
+
+log = logging.getLogger(__name__)
 
 class OmniSharpRemoveFromProject(sublime_plugin.WindowCommand):
     def run(self):
@@ -13,4 +16,4 @@ class OmniSharpRemoveFromProject(sublime_plugin.WindowCommand):
         return helpers.is_csharp(sublime.active_window().active_view())
 
     def _handle_removetoproject(self, data):
-        print('file removed from project')
+        log.debug('file removed from project')

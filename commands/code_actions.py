@@ -1,9 +1,11 @@
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
 
+log = logging.getLogger(__name__)
 
 class OmniSharpCodeActions(sublime_plugin.TextCommand):
     data = None
@@ -20,7 +22,7 @@ class OmniSharpCodeActions(sublime_plugin.TextCommand):
             params = {}
 
             if len(selection) > 0:
-                print('length is : ' + str(len(selection)))
+                log.debug('length is : ' + str(len(selection)))
                 location = selection[0]
                 cursor = self.view.rowcol(location.begin())
                 
@@ -42,19 +44,19 @@ class OmniSharpCodeActions(sublime_plugin.TextCommand):
             self._show_code_actions_view(edit)
 
     def _handle_codeactions(self, data):
-        print(data)
+        log.debug(data)
         if data is None:
             return
         self.data = data
         self.view.run_command('omni_sharp_code_actions')
 
     def _show_code_actions_view(self, edit):
-        print('codeactions is :')
-        print(self.data)
+        log.debug('codeactions is :')
+        log.debug(self.data)
         self.quickitems = [];
         if "CodeActions" in self.data and self.data["CodeActions"] != None:
             for i in self.data["CodeActions"]:
-                print(i)
+                log.debug(i)
                 self.quickitems.append(i.strip())
         if len(self.quickitems) > 0:
             self.view.window().show_quick_panel(self.quickitems, self.on_done)
@@ -77,7 +79,7 @@ class OmniSharpCodeActions(sublime_plugin.TextCommand):
             self.selectionStartColumn = 0
             return
 
-        print("run index: " + str(index))
+        log.debug("run index: " + str(index))
 
         params = {}
         params['codeAction'] = index
@@ -93,8 +95,8 @@ class OmniSharpCodeActions(sublime_plugin.TextCommand):
         self.selectionStartColumn = 0
         
     def _handle_runcodeaction(self, data):
-        print('runcodeaction is:')
-        print(data)
+        log.debug('runcodeaction is:')
+        log.debug(data)
         if data is None:
             return
         

@@ -1,10 +1,12 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
 
+log = logging.getLogger(__name__)
 
 class OmniSharpFixUsings(sublime_plugin.TextCommand):
     data = None
@@ -17,16 +19,16 @@ class OmniSharpFixUsings(sublime_plugin.TextCommand):
             self._fixusings(edit)
 
     def _handle_fixusings(self, data):
-        print('fixusings response is:')
-        print(data)
+        log.debug('fixusings response is:')
+        log.debug(data)
         if data is None:
             return
         self.data = data
         self.view.run_command('omni_sharp_fix_usings')
 
     def _fixusings(self, edit):
-        print('fixusings is :')
-        print(self.data)
+        log.debug('fixusings is :')
+        log.debug(self.data)
         if self.data != None:
             region = sublime.Region(0, self.view.size())
             self.view.replace(edit, region, self.data["Buffer"])

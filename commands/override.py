@@ -1,10 +1,12 @@
 import sublime
 import sublime_plugin
 import re
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
 
+log = logging.getLogger(__name__)
 
 class OmniSharpOverrideTargets(sublime_plugin.TextCommand):
     data = None
@@ -26,19 +28,19 @@ class OmniSharpOverrideTargets(sublime_plugin.TextCommand):
             self._show_override_targets(edit)
 
     def _handle_overridetargets(self, data):
-        print(data)
+        log.debug(data)
         if data is None:
             return
         self.data = data
         self.view.run_command('omni_sharp_override_targets')
 
     def _show_override_targets(self, edit):
-        print('overridetargets is :')
-        print(self.data)
+        log.debug('overridetargets is :')
+        log.debug(self.data)
         self.quickitems = [];
         if len(self.data) > 0:
             for i in self.data:
-                print(i['OverrideTargetName'])
+                log.debug(i['OverrideTargetName'])
                 self.quickitems.append(i["OverrideTargetName"].strip())
         if len(self.quickitems) > 0:
             self.currentedit = edit
@@ -56,7 +58,7 @@ class OmniSharpOverrideTargets(sublime_plugin.TextCommand):
             return
             
         item = self.data[index]
-        print(item)
+        log.debug(item)
 
         params = {}
         params['overrideTargetName'] = item["OverrideTargetName"].strip()
@@ -64,8 +66,8 @@ class OmniSharpOverrideTargets(sublime_plugin.TextCommand):
         self.data = None
         
     def _handle_runtarget(self, data):
-        print('runtarget is:')
-        print(data)
+        log.debug('runtarget is:')
+        log.debug(data)
         if data is None:
             return
         

@@ -1,10 +1,12 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
 
+log = logging.getLogger(__name__)
 
 class OmniSharpFormatDocument(sublime_plugin.TextCommand):
     data = None
@@ -17,16 +19,16 @@ class OmniSharpFormatDocument(sublime_plugin.TextCommand):
             self._formatdoc(edit)
 
     def _handle_formatdocument(self, data):
-        print('formatdocument response is:')
-        print(data)
+        log.debug('formatdocument response is:')
+        log.debug(data)
         if data is None:
             return
         self.data = data
         self.view.run_command('omni_sharp_format_document')
 
     def _formatdoc(self, edit):
-        print('formatdocument is :')
-        print(self.data)
+        log.debug('formatdocument is :')
+        log.debug(self.data)
         if self.data != None:
             region = sublime.Region(0, self.view.size())
             self.view.replace(edit, region, self.data["Buffer"])

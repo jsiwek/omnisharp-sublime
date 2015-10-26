@@ -9,6 +9,7 @@ import subprocess
 import traceback
 import sys
 import signal
+import logging
 
 from .helpers import quote_path
 from .helpers import get_settings
@@ -27,6 +28,8 @@ pool = PoolManager(headers={'Content-Type': 'application/json; charset=UTF-8'})
 
 readycount = 0
 
+log = logging.getLogger(__name__)
+
 class WorkerThread(threading.Thread):
     def __init__(self, url, data, callback, timeout):
         threading.Thread.__init__(self)
@@ -38,22 +41,22 @@ class WorkerThread(threading.Thread):
 
     def run(self):
         try:
-            print('======== request ======== \n Url: %s \n Data: %s' % (self.url, self.data))
+            log.debug('======== request ======== \n Url: %s \n Data: %s' % (self.url, self.data))
 
             response = pool.urlopen('POST', self.url, body=self.data, timeout=self.timeout).data
             
             if not response:
-                print('======== response ======== \n response is empty')
+                log.debug('======== response ======== \n response is empty')
                 self.callback(None)
             else:
                 decodeddata = response.decode('utf-8')
-                print('======== response ======== \n %s' % decodeddata)
+                log.debug('======== response ======== \n %s' % decodeddata)
                 self.callback(json.loads(decodeddata))
                 
-            print('======== end ========')
+            log.debug('======== end ========')
         except Exception as ex:
             if "checkalivestatus" not in self.url:
-                print(str(ex))
+                log.error(str(ex))
                 set_omnisharp_status("Error talking to " + self.url)
             else:
                 set_omnisharp_status("Server Not Running")
@@ -63,7 +66,7 @@ class WorkerThread(threading.Thread):
 def get_response(view, endpoint, callback, params=None, timeout=None):
     solution_path =  current_solution_filepath_or_project_rootpath(view)
 
-    print('solution path: %s' % solution_path)
+    log.debug('solution path: %s' % solution_path)
     if solution_path is None or solution_path not in server_ports:
         callback(None)
         return
@@ -106,13 +109,13 @@ def _available_port():
 def create_omnisharp_server_subprocess(view):
     solution_path = current_solution_filepath_or_project_rootpath(view) 
     if solution_path in launcher_procs:
-        print("already_bound_solution:%s" % solution_path)
+        log.debug("already_bound_solution:%s" % solution_path)
         return
 
-    print("solution_path:%s" % solution_path)
+    log.info("solution_path:%s" % solution_path)
 
     omni_port = _available_port()
-    print('omni_port:%s' % omni_port)
+    log.info('omni_port:%s' % omni_port)
     
     
     config_file = get_settings(view, "omnisharp_server_config_location")
@@ -134,7 +137,7 @@ def create_omnisharp_server_subprocess(view):
             ]
 
             cmd = ' '.join(args)
-            print(cmd)
+            log.debug(cmd)
             
             view.window().run_command("exec",{"cmd":cmd,"shell":"true","quiet":"true"})
             view.window().run_command("hide_panel", {"panel": "output.exec"})
@@ -143,7 +146,7 @@ def create_omnisharp_server_subprocess(view):
             sublime.set_timeout(lambda:check_solution_ready_status(view), 5000)
 
         except Exception as e:
-            print('RAISE_OMNI_SHARP_LAUNCHER_EXCEPTION:%s' % repr(e))
+            log.error('RAISE_OMNI_SHARP_LAUNCHER_EXCEPTION:%s' % repr(e))
             set_omnisharp_status("Error Launching Server")
             return
 
@@ -160,7 +163,7 @@ def find_omni_exe_paths():
 
     source_dir_path = os.path.dirname(source_file_path)
     plugin_dir_path = os.path.dirname(source_dir_path)
-    print(plugin_dir_path)
+    log.debug(plugin_dir_path)
 
     omni_exe_candidate_rel_paths = [
         'omnisharp-roslyn/artifacts/build/omnisharp/' + script_name,

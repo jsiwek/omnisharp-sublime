@@ -1,10 +1,12 @@
 import os
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import helpers
 from ..lib import omnisharp
 
+log = logging.getLogger(__name__)
 
 class OmniSharpAddFileToProjectEventListener(sublime_plugin.EventListener):
 
@@ -15,7 +17,7 @@ class OmniSharpAddFileToProjectEventListener(sublime_plugin.EventListener):
 
 
     def _handle_addtoproject(self, data):
-        print('file added to project')
-        print(data)
+        log.debug('file added to project')
+        log.debug(data)
 
 

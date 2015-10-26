@@ -1,9 +1,11 @@
 import sublime
 import sublime_plugin
+import logging
 
 from ..lib import omnisharp
 from ..lib import helpers
 
+log = logging.getLogger(__name__)
 
 class OmniSharpNavigateTo(sublime_plugin.TextCommand):
     data = None
@@ -19,7 +21,7 @@ class OmniSharpNavigateTo(sublime_plugin.TextCommand):
             self._show_file_members(edit)
 
     def _handle_file_members(self, data):
-        print(data)
+        log.debug(data)
         if data is None:
             return
         self.data = data
