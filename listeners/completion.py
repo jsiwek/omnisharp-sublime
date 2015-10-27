@@ -54,7 +54,6 @@ class OmniSharpCompletionEventListener(sublime_plugin.EventListener):
     def _run_auto_complete(self):
         active_view().run_command("auto_complete", {
             'disable_auto_insert': True,
-            'api_completions_only': True,
             'next_completion_if_showing': False,
             'auto_complete_commit_on_tab': True,
         })
